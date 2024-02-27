@@ -12,7 +12,7 @@ export class GifsService {
   private _tagsHistory:string[]=[];
   public gifsList:Gif[]=[];
 
-  constructor(private http:HttpClient) { }
+  constructor(private http:HttpClient) { this.loadLocalStorage(); }
 
   get tagsHistory():string[]{
     //return [...this.tagsHistory];
@@ -27,6 +27,20 @@ export class GifsService {
     }
     this._tagsHistory.unshift(tag);
     this._tagsHistory = this._tagsHistory.splice(0,10);
+    this.saveLocalStorage();
+  }
+
+  private saveLocalStorage():void{
+    localStorage.setItem('history', JSON.stringify(this._tagsHistory));
+  }
+  private loadLocalStorage():void {
+    if (!localStorage.getItem('history')){
+      return;
+    }
+    const temp = localStorage.getItem('history');
+    this._tagsHistory = JSON.parse(temp!);
+    if(this._tagsHistory.length===0){return}
+    this.serchTag(this._tagsHistory[0]);
   }
 
   public serchTag(tag:string):void{
